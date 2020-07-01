@@ -28,12 +28,14 @@ main {
   display: flex;
 }
 
+.Page,
 body,
 footer {
   flex-direction: column;
 }
 
 #loading-message,
+.Page,
 footer,
 header,
 header .Button {
@@ -163,6 +165,10 @@ main {
   background: rgba(255, 255, 255, 0.2);
   z-index: 99;
 } */
+
+.Page > .Item {
+  margin-top: 1em;
+}
 
 .Item {
   display: flex;

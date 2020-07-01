@@ -8,6 +8,13 @@ const TemplateBandageTable = document.getElementById('Template-BandageTable');
 const Header = document.getElementById('header');
 const Main = document.getElementById('main');
 
+const ExtraInfo = {
+	Bandaging: '',
+	Medication: 'HR Low: HR &lt; 55<br />HR Normal: 55 &lt;= HR &gt;= 110<br />HR High: HR &gt; 110<br/><br/>BP Low: 20 - 100<br/>BP Normal: 100 - 160 <br/>BP Low: 160+',
+	IV: ''
+};
+
+
 const Renderer = (object) => {
 	if (object.Classes.length === 0) return false;
 	RenderPage(object, true);
@@ -27,13 +34,6 @@ function HideAll() {
 	});
 }
 
-function PadLeft(text, minWidth) {
-	text = text.toString();
-	if (text.length >= minWidth) return text;
-	text = `${' '.repeat(minWidth)}${text}`
-	return text.substr(-minWidth);
-}
-
 function RenderPage(page, isBandageTable) {
 	const pageElement = document.importNode(TemplatePage.content.querySelector('div'), true);
 	if (isBandageTable) {
@@ -43,6 +43,8 @@ function RenderPage(page, isBandageTable) {
 		Main.appendChild(pageElement);
 		RenderHeaders('Bandage Table', pageElement);
 	} else {
+		const extraInfo = pageElement.querySelector('.Page-ExtraInfo');
+		if (ExtraInfo.hasOwnProperty(page.Name)) extraInfo.innerHTML = ExtraInfo[page.Name];
 		const items = RenderItem(page, false);
 		pageElement.appendChild(items);
 		Main.appendChild(pageElement);
