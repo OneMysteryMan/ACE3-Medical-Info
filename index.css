@@ -87,14 +87,16 @@ main {
 .Bandage-Table {
   text-align: center;
   border-collapse: collapse;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
-.Bandage-Table thead {
+.Bandage-Table thead tr th {
+  background: #111111;
+  height: 2.5em;
+  line-height: 2.5em;
   position: sticky;
   top: 0;
-  background: #111111;
-  z-index: 3;
+  z-index: 4;
 }
 
 .Bandage-Table th {
@@ -149,17 +151,18 @@ main {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.Bandage-Table td:hover::after,
+/* Disable column highlighting because of "position: sticky" and "overflow: hidden" conflict*/
+/* .Bandage-Table td:hover::after,
 .Bandage-Table thead th:not(:empty):hover::after {
   content: '';
-  height: 4000px;
+  height: 200vh;
   left: 0;
   position: absolute;
-  top: -2000px;
+  top: -100vh;
   width: 100%;
   background: rgba(255, 255, 255, 0.2);
-  z-index: 1;
-}
+  z-index: 99;
+} */
 
 .Item {
   display: flex;
