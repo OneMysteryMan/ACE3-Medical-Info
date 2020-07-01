@@ -37,6 +37,7 @@ function PadLeft(text, minWidth) {
 function RenderPage(page, isBandageTable) {
 	const pageElement = document.importNode(TemplatePage.content.querySelector('div'), true);
 	if (isBandageTable) {
+		pageElement.classList.add('show'); // Default
 		const table = RenderBandageTable(page);
 		pageElement.appendChild(table);
 		Main.appendChild(pageElement);
