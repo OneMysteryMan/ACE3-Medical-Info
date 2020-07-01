@@ -33,6 +33,7 @@ function ParseVariableValue(value) {
 
 function ParseArrayVariableValue(text) {
 	text = text.replace(ARRAY_REGEX, '').split(',').map(s => s.trim());
+	if (text.length === 0 || (text.length === 1 && text[0] === '')) return [];
 	let values = [];
 	for (let i = 0; i < text.length; i++) {
 		values.push(ParseVariableValue(text[i]));
@@ -252,7 +253,7 @@ class HppClass {
 				word = buffer.join('').trim();
 
 				// Word is not a real word
-				if (/\W/.test(word) || word.length === 0) {
+				if (!/\w|\[|\]/.test(word) || word.length === 0) {
 					index++;
 					wasSeparator = true;
 					buffer.length = 0;
