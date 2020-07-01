@@ -6,8 +6,9 @@ const QUOTE_REGEX = /^"|"$/g;
 const SEPARATOR_REGEX = /\s|=/;
 
 const FileParser = (text) => {
-	const addonClass = new HppClass(false);
-	// Ignore outer most class
+	const name = text.substring(text.indexOf('class') + 5, text.indexOf('{')).trim();
+	const addonClass = new HppClass(false, name);
+	// Get class text
 	text = text.substring(text.indexOf('{') + 1, text.lastIndexOf('}'));
 	addonClass.Parse(text);
 	return addonClass;
@@ -35,56 +36,32 @@ function ParseArrayVariableValue(text) {
 }
 
 class HppClass {
-	constructor(parent) {
+	constructor(parent, name) {
+		this.Name = name;
 		this.Parent = parent;
-		this.Variables = {};
-		this.Classes = {};
+		this.Variables = [];
+		this.Classes = [];
 	}
 
-	GetVariables() {
-		return Object.keys(this.Variables);
-	}
-
-	GetVariable(variableName) {
-		if (this.Variables.hasOwnProperty(variableName)) return this.Variables[variableName];
-		else throw new Error(Errors.PARSE_VARIABLE);
-	}
-
-	GetClasses() {
-		return Object.keys(this.Classes);
-	}
-
-	HasClassCI(className) {
+	HasClass(className) {
 		className = className.toLowerCase();
-		const classes = this.GetClasses();
-		for (let i = 0; i < classes.length; i++) {
-			const element = classes[i].toLowerCase();
-			if (element === className) return [true, classes[i]];
+		for (let i = 0; i < this.Classes.length; i++) {
+			const name = this.Classes[i].Name;
+			if (className === name.toLowerCase()) return [true, name];
 		}
 		return [false, ''];
 	}
 
-	HasClass(className) {
-		return this.HasClassCI(className)[0]
-	}
-
-	GetClass(className) {
-		const [res, name] = this.HasClassCI(className);
-		if (res) return this.Classes[name];
-		else throw new Error(Errors.PARSE_CLASS);
-	}
-
 	GetInheritVariables(className) {
-		const [res, name] = this.HasClassCI(className);
-		if (res) return Object.assign({}, this.Variables);
+		const [res, name] = this.HasClass(className);
+		if (res) return this.Variables.splice();
 		else if (this.Parent !== false) return this.Parent.GetInheritVariables(name);
 		else throw new Error(Errors.PARSE_CLASS);
 	}
 
 	RemoveParents() {
-		const classes = this.GetClasses();
-		for (let i = 0; i < classes.length; i++) {
-			this.Classes[classes[i]].RemoveParents();
+		for (let i = 0; i < this.Classes.length; i++) {
+			this.Classes[i].RemoveParents();
 		}
 		delete this.Parent;
 	}
@@ -201,9 +178,10 @@ class HppClass {
 				}
 
 				// Create the new class
-				this.Classes[name] = new HppClass(this);
-				if (inherit !== '') this.Classes[name].Variables = this.GetInheritVariables(inherit);
-				this.Classes[name].Parse(classText);
+				const newClass = new HppClass(this, name);
+				if (inherit !== '') newClass.Variables = this.GetInheritVariables(inherit);
+				newClass.Parse(classText);
+				this.Classes.push(newClass);
 
 				buffer.length = 0;
 				word = name = inherit = classText = '';
@@ -296,9 +274,9 @@ class HppClass {
 				if (name.endsWith('[]')) {
 					// Variable is array
 					name = name.substring(0, name.length - 2); // Remove [] from name
-					this.Variables[name] = ParseArrayVariableValue(value);
+					this.Variables.push(new HppVariable(name, ParseArrayVariableValue(value)));
 				} else {
-					this.Variables[name] = ParseVariableValue(value);
+					this.Variables.push(new HppVariable(name, ParseVariableValue(value)));
 				}
 
 				buffer.length = 0;
@@ -308,5 +286,12 @@ class HppClass {
 			index++;
 			wasSeparator = isSeparator;
 		}
+	}
+}
+
+class HppVariable {
+	constructor(name, value) {
+		this.Name = name;
+		this.Value = value;
 	}
 }
