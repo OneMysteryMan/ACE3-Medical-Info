@@ -68,6 +68,10 @@ function RenderItem(item) {
 		varsTable.appendChild(row);
 	}
 
+	if (item.Variables.length === 0) {
+		itemElement.querySelector('table').classList.add('no-variables');
+	}
+
 	for (let i = 0; i < item.Classes.length; i++) {
 		const subitem = RenderItem(item.Classes[i]);
 		subItems.appendChild(subitem);
