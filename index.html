@@ -18,53 +18,81 @@ work. If not, see <https://creativecommons.org/licenses/by-sa/4.0>.
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>ACE3 Medical Info</title>
 	<style>
+		html {
+			overflow: hidden scroll;
+		}
+
 		html,
 		body {
 			min-height: 100vh;
 			min-width: 100vw;
+			max-width: 100vw;
 			background-color: #111111;
 			color: #bbbbbb;
 			margin: 0;
 			padding: 0;
 		}
 	</style>
-	<link rel="stylesheet" href="index.css" />
+	<link id="pageStylesheet" rel="stylesheet" href="index.css" />
 	<script defer type="module" src="index.js"></script>
 	<script>
 		"use strict";
-		document.addEventListener('DOMContentLoaded', () => {
-			const loadingMessage = document.getElementById('loading-message');
-			const loadingSymbols = ['◐', '◓', '◑', '◒'];
-			const symbolCount = loadingSymbols.length;
-			let loopCount = 0;
-			let a = 0;
-			const loop = () => {
-				if (document.body.classList.contains('loading') && loadingMessage.innerHTML.substring(0, 7) == 'LOADING') {
-					loadingMessage.innerHTML = `LOADING ${loadingSymbols[loopCount]}`;
-					loopCount = (loopCount + 1) % symbolCount;
-					setTimeout(loop, 50);
+		(() => {
+			function Loading() {
+				const loadingMessage = document.getElementById('loading-message');
+				if (!loadingMessage) {
+					setTimeout(Loading, 50);
+					return;
+				}
+
+				const loadingSymbols = ['◐', '◓', '◑', '◒'];
+				const symbolCount = loadingSymbols.length;
+				let loopCount = 0;
+				let a = 0;
+				const loop = () => {
+					if (document.body.classList.contains('loading') && loadingMessage.innerHTML.substring(0, 7) == 'LOADING') {
+						loadingMessage.innerHTML = `LOADING ${loadingSymbols[loopCount]}`;
+						loopCount = (loopCount + 1) % symbolCount;
+						setTimeout(loop, 50);
+					};
 				};
+				loop();
 			};
-			loop();
+
+			Loading();
+		})();
+	</script>
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const isCssDev = false;
+			const pageStylesheet = document.getElementById('pageStylesheet');
+			const stylesheetURL = pageStylesheet.href;
+
+			function ReloadCSS() {
+				pageStylesheet.href = `${stylesheetURL}?test=${performance.now()}`;
+				setTimeout(ReloadCSS, 500);
+			}
+
+			if (isCssDev) ReloadCSS();
 		});
 	</script>
 </head>
 
 <body class="loading">
 	<div id="loading-message">LOADING</div>
-	<header>
+	<header id='header'>
 		<template id="Template-Header">
 			<div class="Button"></div>
 		</template>
 	</header>
-	<main>
+	<main id='main'>
 		<template id="Template-Page">
 			<div class="Page"></div>
 		</template>
 		<template id="Template-Item">
 			<section class="Item">
 				<div class="Item-Title"></div>
-				<table class="Item-KeyValues">
+				<table>
 					<thead>
 						<td>Key</td>
 						<td>Value</td>
@@ -72,6 +100,7 @@ work. If not, see <https://creativecommons.org/licenses/by-sa/4.0>.
 					<tbody>
 					</tbody>
 				</table>
+				<div class="SubItems"></div>
 			</section>
 		</template>
 	</main>
