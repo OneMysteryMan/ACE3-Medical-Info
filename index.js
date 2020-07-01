@@ -10,13 +10,11 @@ work. If not, see <https://creativecommons.org/licenses/by-sa/4.0>.
 "use strict";
 import Errors from './errors.js'
 import FileParser from './parser.js'
+import Renderer from './render.js'
 
 const ACE3_URL = 'https://raw.githubusercontent.com/acemod/ACE3/master/addons/medical_treatment/ACE_Medical_Treatment.hpp';
 const COMMENT_REGEX = /(?=".*?")|\/\*(?:.|\n)*?\*\/|\/\/.*?\n/gm;
-
-const TemplateButton = document.getElementById('Template-Header');
-const TemplatePage = document.getElementById('Template-Page');
-const TemplateItem = document.getElementById('Template-Item');
+const SHOW_PARSED_JSON = false; // Make sure blob: popups are not blocked
 
 const Download = () => {
 	return fetch(ACE3_URL).then((response) => {
@@ -36,12 +34,14 @@ const FilterAndParse = (text) => {
 		// Remove comments
 		text = text.replace(COMMENT_REGEX, '').trim();
 		const result = FileParser(text);
-		/**************************************************************************************************/
 		console.log(result);
-		const blob = new Blob([JSON.stringify(result)], { type: 'application/json' });
-		const url = URL.createObjectURL(blob);
-		window.open(url);
-		setTimeout(() => window.URL.revokeObjectURL(url), 5000);
+		/**************************************************************************************************/
+		if (SHOW_PARSED_JSON) { // Make sure popups are not blocked
+			const blob = new Blob([JSON.stringify(result)], { type: 'application/json' });
+			const url = URL.createObjectURL(blob);
+			window.open(url);
+			setTimeout(() => window.URL.revokeObjectURL(url), 5000);
+		}
 		/**************************************************************************************************/
 		if (result.constructor.name === 'HppClass') resolve(result);
 		else reject(new Error(Errors.PARSE));
@@ -50,17 +50,18 @@ const FilterAndParse = (text) => {
 
 const Render = (object) => {
 	return new Promise((resolve, reject) => {
-		if (object.length === 0) {
-			document.body.classList.remove('loading');
-			let button = document.importNode(TemplateButton.querySelector('div'), true);
+		if (Renderer(object)) {
 			resolve();
-		} else {
-			reject(new Error(Errors.RENDER));
-		}
+		} else
+			reject();
 	});
 }
 
-Download().then(FilterAndParse).then(Render).catch((error) => {
+const Finish = () => {
+	document.body.classList.remove('loading');
+}
+
+Download().then(FilterAndParse).then(Render).then(Finish).catch((error) => {
 	console.log(error);
 	let errorText;
 	switch (error.message) {
