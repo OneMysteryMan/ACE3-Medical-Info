@@ -183,8 +183,7 @@ main {
 }
 
 .Item table {
-  margin-left: 2em;
-  margin-bottom: 1em;
+  margin: 0 auto 1em 2em;
   border-collapse: collapse;
   border: 1px solid black;
 }
