@@ -9,9 +9,19 @@ const Header = document.getElementById('header');
 const Main = document.getElementById('main');
 
 const ExtraInfo = {
-	Bandaging: '',
-	Medication: 'HR Low: HR &lt; 55<br />HR Normal: 55 &lt;= HR &gt;= 110<br />HR High: HR &gt; 110<br/><br/>BP Low: 20 - 100<br/>BP Normal: 100 - 160 <br/>BP Low: 160+',
-	IV: ''
+	Bandaging: [],
+	Medication: [
+		'HR Low: HR &lt; 55',
+		'HR Normal: 55 &lt;= HR &gt;= 110',
+		'HR High: HR &gt; 110',
+		'',
+		'BP Low: 20 - 100',
+		'BP Normal: 100 - 160',
+		'BP Low: 160+',
+		'',
+		'Hear heartbeat: below 60 OR above 160'
+	],
+	IV: []
 };
 
 
@@ -44,7 +54,7 @@ function RenderPage(page, isBandageTable) {
 		RenderHeaders('Bandage Table', pageElement);
 	} else {
 		const extraInfo = pageElement.querySelector('.Page-ExtraInfo');
-		if (ExtraInfo.hasOwnProperty(page.Name)) extraInfo.innerHTML = ExtraInfo[page.Name];
+		if (ExtraInfo.hasOwnProperty(page.Name)) extraInfo.innerHTML = ExtraInfo[page.Name].join('<br />');
 		const items = RenderItem(page, false);
 		pageElement.appendChild(items);
 		Main.appendChild(pageElement);
