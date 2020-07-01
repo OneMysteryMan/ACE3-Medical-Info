@@ -27,7 +27,7 @@ function HideAll() {
 
 function RenderPage(page) {
 	const pageElement = document.importNode(TemplatePage.content.querySelector('div'), true);
-	const items = RenderItem(page);
+	const items = RenderItem(page, false);
 	pageElement.appendChild(items);
 	Main.appendChild(pageElement);
 	RenderHeaders(page.Name, pageElement);
@@ -43,32 +43,35 @@ function RenderHeaders(name, page) {
 	Header.appendChild(button);
 }
 
-function RenderItem(item) {
+function RenderItem(item, renderVariables = true) {
 	const itemElement = document.importNode(TemplateItem.content.querySelector('section'), true);
 	const itemTitle = itemElement.querySelector('.Item-Title');
 	const varsTable = itemElement.querySelector('tbody');
 	const subItems = itemElement.querySelector('.SubItems');
 
 	itemTitle.innerHTML = item.Name;
-	for (let i = 0; i < item.Variables.length; i++) {
-		const variable = item.Variables[i];
-		const row = document.createElement('tr');
-		const name = document.createElement('td');
-		const value = document.createElement('td');
 
-		name.innerHTML = variable.Name;
-		if (Array.isArray(variable.Value)) {
-			value.innerHTML = `{ ${variable.Value.join(', ')} }`;
-		} else {
-			value.innerHTML = variable.Value;
+	if (renderVariables) {
+		for (let i = 0; i < item.Variables.length; i++) {
+			const variable = item.Variables[i];
+			const row = document.createElement('tr');
+			const name = document.createElement('td');
+			const value = document.createElement('td');
+
+			name.innerHTML = variable.Name;
+			if (Array.isArray(variable.Value)) {
+				value.innerHTML = `{ ${variable.Value.join(', ')} }`;
+			} else {
+				value.innerHTML = variable.Value;
+			}
+
+			row.appendChild(name);
+			row.appendChild(value);
+			varsTable.appendChild(row);
 		}
-
-		row.appendChild(name);
-		row.appendChild(value);
-		varsTable.appendChild(row);
 	}
 
-	if (item.Variables.length === 0) {
+	if (item.Variables.length === 0 || !renderVariables) {
 		itemElement.querySelector('table').classList.add('no-variables');
 	}
 
