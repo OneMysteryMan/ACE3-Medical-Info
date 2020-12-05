@@ -17,7 +17,7 @@ const ExtraInfo = {
 		'',
 		'BP Low: 20 - 100',
 		'BP Normal: 100 - 160',
-		'BP Low: 160+',
+		'BP High: 160+',
 		'',
 		'Hear heartbeat: below 60 OR above 160'
 	],
